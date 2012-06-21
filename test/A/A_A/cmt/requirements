@@ -1,0 +1,6 @@
+#-----------------
+macro LibA_A_linkopts ""
+library LibA_A LibA_A.cxx
+macro testA_A_linkopts ""
+program testA_A testA_A.cxx
+#-----------------

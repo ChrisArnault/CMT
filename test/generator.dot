@@ -1,0 +1,23 @@
+digraph G {
+node [shape=box]
+A;
+C;
+B;
+node [shape=ellipse];
+B_H;
+B_H -> B_E
+B_H -> B_F
+C_I;
+B_B;
+B_B -> B_F
+B_B -> B_G
+B_C;
+B_C -> B_F
+B_D;
+B_E;
+B_E -> B_D
+B_F;
+B_F -> B_G
+B_G;
+A_A;
+}

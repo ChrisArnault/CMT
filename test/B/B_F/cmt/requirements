@@ -1,0 +1,7 @@
+#-----------------
+use B_G 
+macro LibB_F_linkopts "LibB_G"
+library LibB_F LibB_F.cxx
+macro testB_F_linkopts "LibB_G"
+program testB_F testB_F.cxx
+#-----------------
