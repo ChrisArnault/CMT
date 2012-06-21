@@ -45,6 +45,7 @@ build
 installarea
 CMakeFiles
 *.vcproj
+*.vcproj.*
 *.sln
 *.ncb
 *.suo
