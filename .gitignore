@@ -46,6 +46,9 @@ installarea
 CMakeFiles
 *.vcproj
 *.sln
+*.ncb
+*.suo
+*.dir
 generator.jpg
 CMakeCache.txt
 cmake_install.cmake
