@@ -1,6 +1,0 @@
-#-----------------
-macro LibB_F_linkopts ""
-library LibB_F LibB_F.cxx
-macro testB_F_linkopts ""
-program testB_F testB_F.cxx
-#-----------------

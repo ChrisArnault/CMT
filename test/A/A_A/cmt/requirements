@@ -1,7 +1,0 @@
-#-----------------
-use A_B 
-macro LibA_A_linkopts "LibA_B"
-library LibA_A LibA_A.cxx
-macro testA_A_linkopts "LibA_B"
-program testA_A testA_A.cxx
-#-----------------

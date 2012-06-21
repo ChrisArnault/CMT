@@ -546,7 +546,7 @@ function(cmt_init status)
   # default value for tests
   set(CMTSITE LAL)
   set(CMTCONFIG win32)
-  set(CMTPROJECTPATH /Arnault/CMTCMake/CMT/test)
+  set(CMTPROJECTPATH $ENV{CMTROOT}/test)
 
   if("$ENV{CMTSITE}" STREQUAL "")
     set(ENV{CMTSITE} "${CMTSITE}")
