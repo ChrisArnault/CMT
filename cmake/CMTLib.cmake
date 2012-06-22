@@ -1,3 +1,5 @@
+include(CTest)
+
 #---------------------------------------------------------
 function(plustab)
   get_property(tab GLOBAL PROPERTY TAB)
