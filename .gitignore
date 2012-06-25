@@ -47,6 +47,7 @@ CMakeFiles
 *.vcproj
 *.vcproj.*
 *.sln
+*.sln.*
 *.ncb
 *.suo
 *.dir
