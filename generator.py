@@ -320,6 +320,9 @@ cmt_executable(test%(name)s src/test%(name)s.cxx Lib%(name)s)
 cmt_test(mytest%(name)s)
 
 #-----------------
+
+cmt_action ()
+
 ''' % { 'name':self.name, 'uses':';'.join (['Lib%s' % u for u in self.uses]) }
 
 	write_text (os.path.join (self.path, 'CMakeLists.txt'), text)
@@ -480,6 +483,9 @@ cmt_has_package(%s "%s")
 
 	text += '''
 #-----------------
+
+cmt_action ()
+
 ''' % { 'name':self.name }
 
 	write_text (os.path.join (self.name, 'CMakeLists.txt'), text)
