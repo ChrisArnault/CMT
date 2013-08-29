@@ -172,7 +172,7 @@ void C%(p)s::f ()
 
 int main ()
 {
-    std::cout << "Test program for package  C%(f)s" << std::endl;
+    std::cout << "Test program for package %(f)s" << std::endl;
 
     C%(p)s o;
 
