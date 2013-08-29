@@ -281,7 +281,7 @@ int main ()
 
     #---------------------------------------------------------
     def set_config_file (self):
-	print '> create %s/hscript' % (self.path)
+	print '> create %s/hscript.yml' % (self.path)
 
 	longuses = [CMTPackages[u].full_name for u in self.uses]
 	print 'longuses=%s' % longuses
@@ -340,7 +340,7 @@ build: {
 } 
 ''' % (self.full_name, deps, self.name, self.name, appdeps, self.name, self.name, libdeps)
 
-	write_text (os.path.join (self.path, 'hscript'), text)
+	write_text (os.path.join (self.path, 'hscript.yml'), text)
 
 
 
