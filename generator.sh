@@ -15,7 +15,7 @@ cd A
 hwaf setup
 hwaf configure
 hwaf
-hwaf show pck-tree
+hwaf show pkg-tree
 hwaf run testA_A
 
 cd ${here}
