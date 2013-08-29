@@ -10,7 +10,15 @@ rm -rf test
 mkdir test
 cd test
 
-python ${CMTROOT}/generator.py projects=3 packages=8
+python ${CMTROOT}/generator.py projects=1 packages=8
+
+hwaf init A
+cd A
+hwaf setup
+hwaf configure
+hwaf
+hwaf show pck-tree
+hwaf run A_A
 
 cd ${here}
 
