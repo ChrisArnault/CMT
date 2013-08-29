@@ -40,7 +40,7 @@ class CMTPackage:
 	else:
 	    self.full_name = prefix + '/' + self.name
 	
-	self.path = os.path.join (project, self.full_name)	
+	self.path = os.path.join (project, 'src', self.full_name)	
 	self.uses = {}
 
     #---------------------------------------------------------
