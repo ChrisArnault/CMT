@@ -16,7 +16,14 @@ hwaf setup
 hwaf configure
 hwaf
 hwaf show pkg-tree
-hwaf run testA_A
+
+for n in `find . -name 'hscript.yml'`
+do
+  m=`dirname $n`
+  p=`basename $m`
+  hwaf run test$p
+done
+
 
 cd ${here}
 
