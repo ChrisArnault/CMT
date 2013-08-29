@@ -20,5 +20,17 @@ One shell script 'generator.sh' automates the testbed as follows:
 - it generates one random set of packages into one project
 - it configures the project using HWAF
 - it builds the project
-- it tests one of the test programs
+- it tests all test programs
+
+Operation:
+
+1) get the generator:
+
+> (cd /my/dev; git clone -b HWAF https://github.com/ChristianArnault/CMT.git)
+
+2) produce the testbed:
+
+> (cd /my/dev; mkdir test; cd test; /my/dev/CMT/generator.sh )
+
+
 
