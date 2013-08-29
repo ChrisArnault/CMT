@@ -1,8 +1,6 @@
-#! /bin/sh
+#! /bin/bash
 
-echo "aaa"
-
-set -x
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 here=$PWD
 
@@ -10,7 +8,7 @@ rm -rf test
 mkdir test
 cd test
 
-python ${CMTROOT}/generator.py projects=1 packages=8
+python ${DIR}/generator.py projects=1 packages=8
 
 hwaf init A
 cd A
