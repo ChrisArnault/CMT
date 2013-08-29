@@ -172,7 +172,7 @@ void C%(p)s::f ()
 
 int main ()
 {
-    std::cout << "Test program for package  C%(p)s" << std::endl;
+    std::cout << "Test program for package  C%(f)s" << std::endl;
 
     C%(p)s o;
 
@@ -180,7 +180,7 @@ int main ()
 }
 // --------------------------------------
 
-''' % {"p":self.name}
+''' % {"p":self.name, "f":self.full_name}
 
 	write_text (os.path.join (self.path, 'src', 'test%s.cxx' % self.name), text)
 
