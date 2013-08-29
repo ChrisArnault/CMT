@@ -29,13 +29,17 @@ CMTPackages = {}
     
 class CMTPackage:
     #---------------------------------------------------------
-    def __init__ (self, mode, project, prefix, package):
+    def __init__ (self, project, prefix, package):
 	print 'creating the package %s %s' % (package, prefix)
-	self.mode = mode
 	self.project = project
 	self.prefix = prefix
 	self.name = package
-	self.full_name = os.path.join (prefix, self.name)
+	
+	if self.prefix == '':
+	    self.full_name = self.name
+	else:
+	    self.full_name = prefix + '/' + self.name
+	
 	self.path = os.path.join (project, self.full_name)	
 	self.uses = {}
 
@@ -70,7 +74,6 @@ class CMTPackage:
 	#                                /<package>/
 	#                                /src/
 
-	#                                /cmt/
 	
 	print '> mkdir %(path)s/%(package)s' % {'path':self.path, 'package':self.name}
 	os.mkdir (os.path.join (self.path, self.name))
@@ -78,13 +81,10 @@ class CMTPackage:
 	print '> mkdir %(path)s/src' % {'path':self.path}
 	os.mkdir (os.path.join (self.path, 'src'))
 
-	print '> mkdir %(path)s/cmt' % {'path':self.path}
-	os.mkdir (os.path.join (self.path, 'cmt'))
-
     #---------------------------------------------------------
     def set_headers (self):
 
-	# print '> create %s/%s/Lib%s.hxx uses=%s' % (self.path, self.name, self.name, self.uses)
+	print '> create %s/%s/Lib%s.hxx uses=%s' % (self.path, self.name, self.name, self.uses)
 
 	text = '''
 #ifndef __Lib%(p)s_hxx__
@@ -128,7 +128,7 @@ private:\n'''  % {"p":self.name}
     #---------------------------------------------------------
     def set_sources (self):
 
-	# print '> create %s/src/Lib%s.cxx' % (self.path, self.name)
+	print '> create %s/src/Lib%s.cxx' % (self.path, self.name)
 
 	text = '''// --------------------------------------
 #include <iostream>
@@ -161,7 +161,7 @@ void C%(p)s::f ()
     #---------------------------------------------------------
     def set_test (self):
 
-	# print '> create %s/src/test%s.cxx' % (self.path, self.name)
+	print '> create %s/src/test%s.cxx' % (self.path, self.name)
 
 	text = '''// --------------------------------------
 #include <iostream>
@@ -181,26 +181,7 @@ int main ()
 
     #---------------------------------------------------------
     def set_requirements (self):
-
-	# print '> create %s/cmt/requirements' % (self.path)
-
-	text = '#-----------------\n'
-	if len(self.uses) > 0:
-	    for u in self.uses:
-		p = CMTPackages[u]
-		text += 'use %s %s\n' % (u, p.prefix)
-
-	text += 'macro Lib%(p)s_linkopts "%(libs)s"\n' % {"p":self.name,
-							  "libs":' '.join (['Lib%s' % u for u in self.uses])}
-
-	text += 'library Lib%(p)s Lib%(p)s.cxx\n' % {"p":self.name}
-
-	text += 'macro test%(p)s_linkopts "%(libs)s"\n' % {"p":self.name,
-							   "libs":' '.join (['Lib%s' % u for u in self.uses])}
-	text += '''program test%(p)s test%(p)s.cxx
-#-----------------''' % {"p":self.name}
-	    
-	write_text (os.path.join (self.path, 'cmt', 'requirements'), text)
+	pass
 
     #---------------------------------------------------------
     def show_uses (self, t=''):
@@ -266,7 +247,7 @@ int main ()
 		# if [A use B] was defined first, we need to remove A from the list of uses of B
 
 		uses = set(random.sample (keys, random.choice (range(len(keys)/2))))
-		print 'pack> Original all used %s for package %s' % (uses, self.name)
+		#print 'pack> Original all used %s for package %s' % (uses, self.name)
 
 		toberemoved = set()
 		for u in uses:
@@ -274,7 +255,7 @@ int main ()
 		    if self.name in p.get_uses():
 			toberemoved.add(u)
 
-		print 'pack> to be removed used %s' % (toberemoved)
+		#print 'pack> to be removed used %s' % (toberemoved)
 		uses -= toberemoved
 
 		# now we have to remove packages that belong to a project which is NOT used by the current project.
@@ -285,63 +266,90 @@ int main ()
 		    if not ((self.project in proj.get_uses ()) or (self.project == pack.project)):
 			toberemoved.add(u)
 
-		print 'pack> to be removed used %s' % (toberemoved)
+		#print 'pack> to be removed used %s' % (toberemoved)
 		uses -= toberemoved
-		print 'pack> Final all used %s' % (uses)
+		#print 'pack> Final all used %s' % (uses)
 
 		self.uses = uses
 
-		print 'pack> package %s uses = %s' % (self.name, self.uses)
+		#print 'pack> package %s uses = %s' % (self.name, self.uses)
 
 	self.set_headers ()
 	self.set_sources ()
 	self.set_test ()
-	self.set_requirements ()
+	#self.set_requirements ()
 
     #---------------------------------------------------------
     def set_config_file (self):
+	print '> create %s/hscript' % (self.path)
 
-	# print '> create %s/CMakeLists.txt' % (self.path)
+	longuses = [CMTPackages[u].full_name for u in self.uses]
+	print 'longuses=%s' % longuses
+
+	deps = ''
+	if len (longuses) > 0:
+	    deps = '''
+  deps: {
+    public: %s,
+  },  
+''' % [u for u in longuses]
+
+	libdeps = ''
+	if len (self.uses) > 0:
+	    libdeps = '''
+    use: %s,
+''' % ['Lib%s' % u for u in self.uses]
+
+	alluses = [ self.name ]
+	alluses.extend (self.uses)
+	appdeps = '''
+    use: %s,
+''' % ['Lib%s' % u for u in alluses]
+
 
 	text = '''
-cmake_minimum_required(VERSION 2.8)
-include($ENV{CMTROOT}/cmake/CMTLib.cmake)
-#-----------------
-cmt_package(%(name)s)
-''' % { 'name':self.name }
+## -*- yaml -*-
 
-	for u in self.uses:
-	    text += '''cmt_use_package (%s)
-''' % (u)
-	
-	text += '''
-cmt_library(Lib%(name)s src/Lib%(name)s.cxx "%(uses)s")
-cmt_executable(test%(name)s src/test%(name)s.cxx Lib%(name)s)
-cmt_test(mytest%(name)s)
+package: {
+  name: "%s",
+  authors: ["my"],
+  %s
+}
 
-#-----------------
+configure: {
+  tools: ["compiler_c", "compiler_cxx", "python"],
+  env: {
+    PYTHONPATH: "${INSTALL_AREA}/python:${PYTHONPATH}"
+  },
+}
 
-cmt_action ()
+build: {
 
-''' % { 'name':self.name, 'uses':';'.join (['Lib%s' % u for u in self.uses]) }
+  test%s: {
+    features: "cxx cxxprogram",
+    source: "src/test%s.cxx",
+    %s
+  },
 
-	write_text (os.path.join (self.path, 'CMakeLists.txt'), text)
+  Lib%s: {
+    features: "cxx cxxshlib",
+    source: "src/Lib%s.cxx",
+    %s
+  },
+  
+} 
+''' % (self.full_name, deps, self.name, self.name, appdeps, self.name, self.name, libdeps)
 
-
-
-
-
-
+	write_text (os.path.join (self.path, 'hscript'), text)
 
 
 
 class CMTProject:
 
     #---------------------------------------------------------
-    def __init__ (self, mode, name, first_package, packages = 1):
+    def __init__ (self, name, first_package, packages = 1):
 	global Letters
 	
-	self.mode = mode
 	self.name = name
 	#self.base = base
 	self.packages = []
@@ -353,7 +361,7 @@ class CMTProject:
 		prefix = os.path.normpath (os.path.join ('Pre', 'Fix'))
 		prefix = prefix.replace ('\\', '/')
 	    package_name = name + '_' + encode(package)
-	    CMTPackages[package_name] = CMTPackage (mode, name, prefix, package_name)
+	    CMTPackages[package_name] = CMTPackage (name, prefix, package_name)
 	    self.packages.append(package_name)
 	    
     #---------------------------------------------------------
@@ -423,11 +431,8 @@ class CMTProject:
 	print '> mkdir %s' % (self.name)
 	os.mkdir (self.name)
 
-	print '> mkdir %s/build' % (self.name)
-	os.mkdir (os.path.join (self.name, 'build'))
-
-	print '> mkdir %s/cmt' % (self.name)
-	os.mkdir (os.path.join (self.name, 'cmt'))
+	print '> mkdir %s/__build__' % (self.name)
+	os.mkdir (os.path.join (self.name, "__build__"))
 
 	for package in self.packages:
 	    p = CMTPackages[package]
@@ -461,35 +466,6 @@ class CMTProject:
 
 	config_dir = self.name
 
-	# print '> create %s/CMakeLists.txt' % (config_dir)
-
-	text = '''
-cmake_minimum_required(VERSION 2.8)
-include($ENV{CMTROOT}/cmake/CMTLib.cmake)
-#-----------------
-cmt_project(%(name)s "")
-''' % { 'name':self.name }
-
-	for u in self.get_used_projects():
-	    text += '''
-cmt_use_project(%s)
-''' % (u)
-
-	for package in self.packages:
-	    p = CMTPackages[package]
-	    text += '''
-cmt_has_package(%s "%s")
-''' % (package, p.prefix)
-
-	text += '''
-#-----------------
-
-cmt_action ()
-
-''' % { 'name':self.name }
-
-	write_text (os.path.join (self.name, 'CMakeLists.txt'), text)
-
 	for package in self.packages:
             p = CMTPackages[package]
 	    p.set_config_file ()
@@ -512,8 +488,7 @@ CMTGenerator
 Construct a CMT project with a hierarchy of projects each containing a hierarchy of packages each containing
  - sources of a library (with one C++ class)
  - sources of a test program (which instantiates one object of the class)
- - a cmt requirements file
- - or a CMakeLists.txt
+ - a hscript file
 
 Projects may use other projects.
 Packages may use other packages.
@@ -522,10 +497,9 @@ For each used package, the package's class includes the used classes, and instan
 """
 class CMTGenerator:
     #---------------------------------------------------------
-    def __init__ (self, mode = 'cmt2waf', projects = 1, max_packages = 1, uses = []):
+    def __init__ (self, projects = 1, max_packages = 1, uses = []):
 	global Letters
 	
-	self.mode = mode
 	self.projects = projects
 	self.max_packages = max_packages
 	self.uses = uses
@@ -536,7 +510,7 @@ class CMTGenerator:
 	    name = encode(project)
 	    packages = random.choice (xrange (self.max_packages)) + 1
 	    print 'creating the project %s' % (name)
-	    CMTProjects[name] = CMTProject (self.mode, name, first, packages)
+	    CMTProjects[name] = CMTProject (name, first, packages)
 	    first += packages
 
     #---------------------------------------------------------
@@ -551,52 +525,6 @@ class CMTGenerator:
 	for project in CMTProjects:
             p = CMTProjects[project]
 	    p.set_structure ()
-
-	if os.path.exists('build'):
-	    shutil.rmtree('build')
-
-	print '> mkdir build'
-	os.mkdir ('build')
-
-	# print '> create CMakeLists.txt'
-
-	text = '''
-cmake_minimum_required(VERSION 2.8)
-include($ENV{CMTROOT}/cmake/CMTLib.cmake)
-cmake_minimum_required(VERSION 2.8)
-
-set(CMTROOT "$ENV{CMTROOT}")
-set(CMTPROJECTPATH "$ENV{CMTPROJECTPATH}")
-if("${CMTPROJECTPATH}" STREQUAL "")
-  set(CMTPROJECTPATH "${CMTROOT}/test")
-endif()
-
-unset(status)
-cmt_init(status)
-
-if("${status}" STREQUAL "stop")
- return()
-endif()
-
-cmt_off()
-
-cmt_use_project(work)
-
-cmt_project(work "")
-
-'''
-
-	for project in CMTProjects:
-	    text += '''cmt_use_project(%s)
-''' % (project)
-
-	text += '''
-cmt_action()
-
-'''
-
-
-	write_text ('CMakeLists.txt', text)
 
 
     #---------------------------------------------------------
@@ -663,10 +591,10 @@ cmt_action()
 #
 class CMTInterface:
     #---------------------------------------------------------
-    def generate_project (self, projects, max_packages, mode = 'cmake', uses = []):
+    def generate_project (self, projects, max_packages, uses = []):
 	here = os.getcwd ()
 	
-	generator = CMTGenerator (mode, projects, max_packages, uses)
+	generator = CMTGenerator (projects, max_packages, uses)
 	generator.generate ()
 
 	print "Fin de la generation"
@@ -705,17 +633,13 @@ Interface = CMTInterface ()
 
 if __name__ == "__main__":
     project = 'A'
-    mode = 'cmake'
     projects = 1
     packages = 5
     uses = []
     
     if len(sys.argv) > 1:
 	for arg in sys.argv:
-	    if re.match ('mode=(cmake|waf|cmt2cmake)', arg):
-		m = re.match ('cmt2waf=(\d+)', arg)
-		mode = m.group(1)
-	    elif re.match ('projects=(\d+)', arg):
+	    if re.match ('projects=(\d+)', arg):
 		m = re.match ('projects=(\d+)', arg)
 		projects = int(m.group(1))
 	    elif re.match ('packages=(\d+)', arg):
@@ -727,14 +651,13 @@ if __name__ == "__main__":
     else:
 	print """
 generator.py
-  mode=cmake|waf|cmt2cmake
   projects=<n>
   packages=<n>
   uses=<list>
 """
 
-    print 'mode=%s projects=%d packages=%d uses=%s' % ( mode, projects, packages, uses)
+    print 'projects=%d packages=%d uses=%s' % ( projects, packages, uses)
 
     if projects > 0:
-	Interface.generate_project (projects, packages, mode)
+	Interface.generate_project (projects, packages)
 

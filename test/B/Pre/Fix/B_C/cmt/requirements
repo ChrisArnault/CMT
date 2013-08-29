@@ -1,7 +1,0 @@
-#-----------------
-use B_F 
-macro LibB_C_linkopts "LibB_F"
-library LibB_C LibB_C.cxx
-macro testB_C_linkopts "LibB_F"
-program testB_C testB_C.cxx
-#-----------------

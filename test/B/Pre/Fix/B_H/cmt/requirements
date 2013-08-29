@@ -1,8 +1,0 @@
-#-----------------
-use B_E Pre/Fix
-use B_F 
-macro LibB_H_linkopts "LibB_E LibB_F"
-library LibB_H LibB_H.cxx
-macro testB_H_linkopts "LibB_E LibB_F"
-program testB_H testB_H.cxx
-#-----------------
