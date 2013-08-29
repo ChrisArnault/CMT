@@ -71,12 +71,12 @@ class CMTPackage:
 
 	# Create the package structure:
 	#    <project>/<prefix>/<package>
-	#                                /<package>/
+	#                                /includes/<package>/
 	#                                /src/
 
 	
-	print '> mkdir %(path)s/%(package)s' % {'path':self.path, 'package':self.name}
-	os.mkdir (os.path.join (self.path, self.name))
+	print '> mkdir %(path)s/includes/%(package)s' % {'path':self.path, 'package':self.name}
+	os.mkdir (os.path.join (self.path, "includes", self.name))
 
 	print '> mkdir %(path)s/src' % {'path':self.path}
 	os.mkdir (os.path.join (self.path, 'src'))
@@ -327,12 +327,14 @@ build: {
 
   test%s: {
     features: "cxx cxxprogram",
+    export_includes: "includes",
     source: "src/test%s.cxx",
     %s
   },
 
   Lib%s: {
     features: "cxx cxxshlib",
+    export_includes: "includes",
     source: "src/Lib%s.cxx",
     %s
   },
