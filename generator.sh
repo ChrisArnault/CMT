@@ -18,7 +18,7 @@ hwaf setup
 hwaf configure
 hwaf
 hwaf show pck-tree
-hwaf run A_A
+hwaf run testA_A
 
 cd ${here}
 
