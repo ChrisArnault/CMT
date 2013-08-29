@@ -21,6 +21,7 @@ for n in `find . -name 'hscript.yml'`
 do
   m=`dirname $n`
   p=`basename $m`
+  echo "----------------  testing $p  -----------------------------"
   hwaf run test$p
 done
 
