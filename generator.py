@@ -75,6 +75,9 @@ class CMTPackage:
 	#                                /src/
 
 	
+	print '> mkdir %(path)s/includes' % {'path':self.path}
+	os.mkdir (os.path.join (self.path, "includes"))
+
 	print '> mkdir %(path)s/includes/%(package)s' % {'path':self.path, 'package':self.name}
 	os.mkdir (os.path.join (self.path, "includes", self.name))
 
