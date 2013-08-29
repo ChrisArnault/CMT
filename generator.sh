@@ -10,7 +10,7 @@ rm -rf test
 mkdir test
 cd test
 
-#python ${CMTROOT}/generator.py projects=3 packages=8
+python ${CMTROOT}/generator.py projects=3 packages=8
 
 cd ${here}
 
