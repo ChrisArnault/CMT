@@ -330,6 +330,7 @@ build: {
 
   test%s: {
     features: "cxx cxxprogram",
+    includes: "includes",
     export_includes: "includes",
     source: "src/test%s.cxx",
     %s
@@ -337,6 +338,7 @@ build: {
 
   Lib%s: {
     features: "cxx cxxshlib",
+    includes: "includes",
     export_includes: "includes",
     source: "src/Lib%s.cxx",
     %s
