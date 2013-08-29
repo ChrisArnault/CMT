@@ -126,7 +126,7 @@ private:\n'''  % {"p":self.name}
 
 '''
 
-	write_text (os.path.join (self.path, self.name, 'Lib%s.hxx' % self.name), text)
+	write_text (os.path.join (self.path, "includes", self.name, 'Lib%s.hxx' % self.name), text)
 
     #---------------------------------------------------------
     def set_sources (self):
